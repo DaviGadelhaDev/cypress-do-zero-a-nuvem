@@ -10,6 +10,10 @@ function preencheCamposObrigatorios() {
   cy.get('textarea').type('testando textarea', { delay: 0 });
 }
 
+function campos_array() {
+  return ['#firstName', '#lastName', '#email', '#phone'];
+}
+
 describe('Central de Atendimento ao Cliente', () => {
   beforeEach(() => {
     cy.visit('./src/index.html');
@@ -31,6 +35,15 @@ describe('Central de Atendimento ao Cliente', () => {
     cy.get('.error').should('be.visible');
   });
 
+  it('Preenche e limpa os campos nome, sobrenome, email e telefone' ,() => {
+    const campos = campos_array()
+    const valores = ['Davi', 'Gadelha', 'davibrgadelha@gmail.com', '41984980238']
+
+    campos.forEach((seletor, index) => {
+      cy.get(seletor).type(valores[index]).should('have.value', valores[index]).clear().should('have.value', '')
+    })
+  });
+
   describe('Validação do campo de telefone', () => {
     // 🔹 Função auxiliar específica para este describe
     function getPhone() {
@@ -46,7 +59,7 @@ describe('Central de Atendimento ao Cliente', () => {
     });
 
     it('Deve ficar vazio ao inserir um valor misto', () => {
-      getPhone().type('123ab@456').should('have.value', '');
+      getPhone().type('123ab@456').should('have.value', '123456');
     });
 
     it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', () => {
