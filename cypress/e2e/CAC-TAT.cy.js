@@ -1,11 +1,4 @@
-import { stringGen, getFieldSelectors, fillRequiredFields, fillAndClearFields } from '../support/utils';
-
-const user = {
-    firstName: 'Davi',
-    lastName: 'Gadelha',
-    email: 'davibrgadelha@gmail.com',
-    phone: '123456'
-};
+import { getPhone, getFieldSelectors, fillRequiredFields, fillAndClearFields, user } from '../support/utils';
 
 describe('Central of Support to Client', () => {
     beforeEach(() => {
@@ -37,13 +30,56 @@ describe('Central of Support to Client', () => {
 
     it('Submit form with success using a custom command', () => {
         cy.fillMandatoryFieldsAndSubmit(user);
+        cy.get('.success').should('be.visible');
     });
 
-    context('Check phone field', () => {
-        function getPhone() {
-            return cy.get('#phone');
-        }
+    it('Select product Youtube by your name', () => {
+        cy.get('#product')
+          .select('YouTube')
+          .should('have.value', 'youtube')
+    })
 
+    it('Select product Mentoria by your value', () => {
+        cy.get('#product')
+          .select('mentoria')
+          .should('have.value', 'mentoria')
+    })
+
+    it('Select product Blog by your indice', () => {
+        cy.get('#product')
+          .select(1)
+          .should('have.value', 'blog')
+    })
+
+    it('Check the type of service "Feedback"', () => {
+       cy.get('input[type="radio"]').check('feedback').should('be.checked')
+    })
+
+    it('Check each type of service', () => {
+        cy.get('input[type="radio"]').each(($radio) => {
+            cy.wrap($radio).check().should('be.checked')
+        })
+    })
+
+    it('Check both checkboxs and then uncheck the last', () => {
+        cy.get('#check input[type="checkbox"]')
+            .as('checkboxes')
+            .check()
+
+        //Verification
+        cy.get('@checkboxes').each(($checkbox) => {
+            cy.wrap($checkbox).check().should('be.checked')
+        })
+
+        //uncheck the last
+        cy.get('@checkboxes').last().uncheck().should('not.be.checked')
+    })
+
+    context('Select a file of fixtures folder', () => {
+        
+    })
+
+    context('Check phone field', () => {
         it('Should clear the phone field when non-numeric input (letters) is entered', () => {
             getPhone().type('abcdef').should('have.value', '');
         });
