@@ -75,8 +75,32 @@ describe('Central of Support to Client', () => {
         cy.get('@checkboxes').last().uncheck().should('not.be.checked')
     })
 
-    context('Select a file of fixtures folder', () => {
-        
+    context('Select a file', () => {
+        it('Select a file from the fixtures folder', () => {
+            cy.get('#file-upload')
+                .selectFile('cypress/fixtures/example.json')
+                .then(input => {
+                    expect(input[0].files[0].name).to.equal('example.json')
+                })
+        })
+
+        it('Select a file by simulating a drag-and-drop', () => {
+            cy.get('#file-upload')
+                .selectFile('cypress/fixtures/example.json', { action: 'drag-drop' })
+                .then(input => {
+                    expect(input[0].files[0].name).to.equal('example.json')
+                })
+        })
+
+        it('Selects a file using fixture', () => {
+            cy.fixture('example.json',  null).as('myFixture')
+            cy.get('#file-upload')
+                .selectFile('@myFixture')
+                .then(input => {
+                    console.log(input)
+                    expect(input[0].files[0].name).to.equal('example.json')
+                })
+        })
     })
 
     context('Check phone field', () => {
