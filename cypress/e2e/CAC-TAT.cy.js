@@ -1,26 +1,32 @@
-import { getPhone, getFieldSelectors, fillRequiredFields, fillAndClearFields, user } from '../support/utils';
+import { 
+    getPhone, 
+    getFieldSelectors, 
+    fillRequiredFields, 
+    fillAndClearFields, 
+    user 
+} from '../support/utils';
 
-describe('Central of Support to Client', () => {
+describe('Customer Support Center', () => {
     beforeEach(() => {
         cy.visit('./src/index.html');
     });
 
-    it('Check title', () => {
+    it('Checks the page title', () => {
         cy.title().should('be.equal', 'Central de Atendimento ao Cliente TAT');
     });
 
-    it('Fills the required fields and submits the form', () => { 
+    it('Fills required fields and submits the form', () => { 
         fillRequiredFields();
     });
 
-    it('Displays an error message when submitting the form with an invalid email format', () => {
+    it('Displays an error message for invalid email format', () => {
         cy.get('#email').type('davigadelha');
         cy.get('button[type="submit"]').click();
         cy.get('.error').should('be.visible');
     });
 
-    it('Fills and clears the name, email, and phone fields' , () => {
-        fillAndClearFields(getFieldSelectors(), ['Davi', 'Gadelha', 'davibrgadelha@gmail.com', '41984980238'])
+    it('Fills and clears the name, email, and phone fields', () => {
+        fillAndClearFields(getFieldSelectors(), ['Davi', 'Gadelha', 'davibrgadelha@gmail.com', '41984980238']);
     });
 
     it('Displays an error message when submitting an empty form', () => {
@@ -28,95 +34,105 @@ describe('Central of Support to Client', () => {
         cy.get('.error').should('be.visible');
     });
 
-    it('Submit form with success using a custom command', () => {
+    it('Submits form successfully using a custom command', () => {
         cy.fillMandatoryFieldsAndSubmit(user);
         cy.get('.success').should('be.visible');
     });
 
-    it('Select product Youtube by your name', () => {
-        cy.get('#product')
-          .select('YouTube')
-          .should('have.value', 'youtube')
-    })
+    context('Product Selection', () => {
+        it('Selects YouTube by name', () => {
+            cy.get('#product').select('YouTube').should('have.value', 'youtube');
+        });
 
-    it('Select product Mentoria by your value', () => {
-        cy.get('#product')
-          .select('mentoria')
-          .should('have.value', 'mentoria')
-    })
+        it('Selects Mentoria by value', () => {
+            cy.get('#product').select('mentoria').should('have.value', 'mentoria');
+        });
 
-    it('Select product Blog by your indice', () => {
-        cy.get('#product')
-          .select(1)
-          .should('have.value', 'blog')
-    })
+        it('Selects Blog by index', () => {
+            cy.get('#product').select(1).should('have.value', 'blog');
+        });
+    });
 
-    it('Check the type of service "Feedback"', () => {
-       cy.get('input[type="radio"]').check('feedback').should('be.checked')
-    })
+    context('Service Type Selection', () => {
+        it('Checks the "Feedback" service type', () => {
+            cy.get('input[type="radio"]').check('feedback').should('be.checked');
+        });
 
-    it('Check each type of service', () => {
-        cy.get('input[type="radio"]').each(($radio) => {
-            cy.wrap($radio).check().should('be.checked')
-        })
-    })
+        it('Checks each service type', () => {
+            cy.get('input[type="radio"]').each(($radio) => {
+                cy.wrap($radio).check().should('be.checked');
+            });
+        });
+    });
 
-    it('Check both checkboxs and then uncheck the last', () => {
-        cy.get('#check input[type="checkbox"]')
-            .as('checkboxes')
-            .check()
+    context('Checkbox Interaction', () => {
+        it('Checks both checkboxes and then unchecks the last', () => {
+            cy.get('#check input[type="checkbox"]').as('checkboxes').check();
 
-        //Verification
-        cy.get('@checkboxes').each(($checkbox) => {
-            cy.wrap($checkbox).check().should('be.checked')
-        })
+            cy.get('@checkboxes').each(($checkbox) => {
+                cy.wrap($checkbox).check().should('be.checked');
+            });
 
-        //uncheck the last
-        cy.get('@checkboxes').last().uncheck().should('not.be.checked')
-    })
+            cy.get('@checkboxes').last().uncheck().should('not.be.checked');
+        });
+    });
 
-    context('Select a file', () => {
-        it('Select a file from the fixtures folder', () => {
+    context('Privacy Policy', () => {
+        it('Verifies privacy policy opens in a new tab', () => {
+            cy.contains('a', 'Política de Privacidade').should('have.attr', 'target', '_blank');
+        });
+
+        it('Accesses privacy policy by removing target attribute', () => {
+            cy.contains('a', 'Política de Privacidade')
+                .invoke('removeAttr', 'target')
+                .click();
+            
+
+            cy.contains('h1', 'CAC TAT - Política de Privacidade').should('be.visible');
+        });
+    });
+
+    context('File Upload', () => {
+        it('Uploads a file from fixtures folder', () => {
             cy.get('#file-upload')
                 .selectFile('cypress/fixtures/example.json')
                 .then(input => {
-                    expect(input[0].files[0].name).to.equal('example.json')
-                })
-        })
+                    expect(input[0].files[0].name).to.equal('example.json');
+                });
+        });
 
-        it('Select a file by simulating a drag-and-drop', () => {
+        it('Simulates file drag-and-drop', () => {
             cy.get('#file-upload')
                 .selectFile('cypress/fixtures/example.json', { action: 'drag-drop' })
                 .then(input => {
-                    expect(input[0].files[0].name).to.equal('example.json')
-                })
-        })
+                    expect(input[0].files[0].name).to.equal('example.json');
+                });
+        });
 
-        it('Selects a file using fixture', () => {
-            cy.fixture('example.json',  null).as('myFixture')
+        it('Selects a file using fixture alias', () => {
+            cy.fixture('example.json', null).as('myFixture');
             cy.get('#file-upload')
                 .selectFile('@myFixture')
                 .then(input => {
-                    console.log(input)
-                    expect(input[0].files[0].name).to.equal('example.json')
-                })
-        })
-    })
+                    expect(input[0].files[0].name).to.equal('example.json');
+                });
+        });
+    });
 
-    context('Check phone field', () => {
-        it('Should clear the phone field when non-numeric input (letters) is entered', () => {
+    context('Phone Field Validation', () => {
+        it('Clears phone field when non-numeric characters are entered', () => {
             getPhone().type('abcdef').should('have.value', '');
         });
 
-        it('Should clear the phone field when special characters are entered', () => {
+        it('Clears phone field when special characters are entered', () => {
             getPhone().type('@#%&*').should('have.value', '');
         });
 
-        it('Should contain only numeric characters when a mixed value is entered', () => {
+        it('Allows only numeric characters when mixed input is entered', () => {
             getPhone().type('123ab@456').should('have.value', '123456');
         });
 
-        it('Displays an error message when the phone becomes required but isn’t filled before submitting the form', () => {
+        it('Displays error if phone is required but not filled before submission', () => {
             fillRequiredFields();
             cy.get('#phone-checkbox').check().should('be.checked'); 
             cy.wait(100); 
@@ -125,7 +141,7 @@ describe('Central of Support to Client', () => {
             cy.get('.error').should('be.visible'); 
         });
 
-        it('Should accept normally', () => {
+        it('Accepts valid numeric input', () => {
             getPhone().type('123456').should('have.value', '123456');
         });
     });
