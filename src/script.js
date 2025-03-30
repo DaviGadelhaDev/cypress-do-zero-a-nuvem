@@ -28,10 +28,10 @@ document.querySelector('button[type="submit"]')
     const fileField = document.querySelector('input[type="file"]')
     const successMessage = document.querySelector('.success')
     if (!firstNameField.value || !lastNameField.value || !emailField.value || !textareaField.value) {
-      return showAndHideErrorMessage()
+      /* return showAndHideErrorMessage() */
     }
     if (isPhoneRequired && !phoneField.value) {
-      return showAndHideErrorMessage()
+     /*  return showAndHideErrorMessage() */
     }
     if (!emailField.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
       /* return showAndHideErrorMessage() */
