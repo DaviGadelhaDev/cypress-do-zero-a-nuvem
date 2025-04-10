@@ -15,7 +15,7 @@ describe('Customer Support Center', () => {
         cy.title().should('be.equal', 'Central de Atendimento ao Cliente TAT');
     });
 
-    it.only('Fills required fields and submits the form', () => { 
+    it('Fills required fields and submits the form', () => { 
         cy.clock();
         fillRequiredFields();
         cy.get('.success').should('be.visible');
@@ -42,6 +42,14 @@ describe('Customer Support Center', () => {
         cy.fillMandatoryFieldsAndSubmit(user);
         cy.get('.success').should('be.visible');
     });
+
+    it('Finding the hidden cat', () => {
+        cy.get('#cat')
+            .invoke('show')
+            .should('be.visible')
+        cy.get('#title')
+            .invoke('text', 'CAT TAT')
+    })
 
     context('Product Selection', () => {
         it('Selects YouTube by name', () => {
