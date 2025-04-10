@@ -15,8 +15,12 @@ describe('Customer Support Center', () => {
         cy.title().should('be.equal', 'Central de Atendimento ao Cliente TAT');
     });
 
-    it('Fills required fields and submits the form', () => { 
+    it.only('Fills required fields and submits the form', () => { 
+        cy.clock();
         fillRequiredFields();
+        cy.get('.success').should('be.visible');
+        cy.tick(3000)
+        cy.get('.success').should('not.be.visible')
     });
 
     it('Displays an error message for invalid email format', () => {
